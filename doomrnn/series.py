@@ -2,6 +2,7 @@
 Uses pretrained VAE to process dataset to get mu and logvar for each frame, and stores
 all the dataset files into one dataset called series/series.npz
 '''
+import glob
 
 import numpy as np
 import os
@@ -50,16 +51,56 @@ def decode(z):
 
 
 # Hyperparameters for ConvVAE
-z_size=64
+z_size=32
 batch_size=1
 learning_rate=0.0001
 kl_tolerance=0.5
 
-filelist = os.listdir(DATA_DIR)
-filelist.sort()
-filelist = filelist[0:10000]
+#Kais data loading code ---------------------
+obs_data = []
+action_data = []
+loadfolder = "../../WorldModels/data_small_episodes/"
+obs_filename_base = 'obs_data_doomrnn_'
+actions_filename_base = 'action_data_doomrnn_'
+obs_file_pattern = os.path.join(loadfolder, obs_filename_base + '*')
+action_file_pattern = os.path.join(loadfolder, actions_filename_base + '*')
+for file_number in range(1, len(glob.glob(obs_file_pattern)) + 1):
+  obs_file = os.path.join(loadfolder, obs_filename_base) + str(file_number) + ".npy"
+  action_file = os.path.join(loadfolder, actions_filename_base) + str(file_number) + ".npy"
+  print("Loading obs file ", obs_file)
+  for episode in np.load(obs_file):
+    obs_data.append(episode)
+  print("loading action file ", action_file)
+  for episode in np.load(action_file):
+    action_data.append(episode)
+print("-----LOADING FILES DONE -------")
 
-dataset, action_dataset = load_raw_data_list(filelist)
+obs_data = np.array(obs_data)
+action_data = np.array(action_data)
+
+print("Obs data has shape ", obs_data.shape)
+print("action data has shape ", action_data.shape)
+
+# Need to store each ep separately. we cant predict btw episodes
+# TODO Note: There are equally many actions and observations. I guess the final action can just be discarded?
+z_sequences = []  # One for each ep
+action_sequences = []  # One for each ep
+for episode_number in range(len(obs_data)):
+  observations = np.array(obs_data[episode_number])
+  # Generating all latent codes for this episode
+  latent_values = vae.generate_latent_variables(observations)
+  z_sequences.append(latent_values)
+  action_sequences.append(np.array(action_data[episode_number]))
+
+  print("Added latent sequences of length ", len(latent_values), " and action sequence of length ",
+        len(action_sequences[-1]))
+  print("Array sizes: ", len(z_sequences), ", ", len(action_sequences))
+z_sequences = np.array(z_sequences)  # Will this work? Has sub-arrays of differing lengths.
+
+#End Kais data loading code
+
+
+dataset, action_dataset = z_sequences, action_sequences
 
 reset_graph()
 
