@@ -72,7 +72,9 @@ def create_dataset(raw_data_list):
 # load dataset from record/*. only use first 10K, sorted by filename.
 filelist = os.listdir(DATA_DIR)
 filelist.sort()
-filelist = filelist[0:10000]
+num_files = len(filelist)
+max_file = min(num_files,10000)
+filelist = filelist[0:max_file]
 dataset = load_raw_data_list(filelist)
 dataset = create_dataset(dataset)
 
@@ -110,6 +112,7 @@ for epoch in range(NUM_EPOCH):
       print("step", (train_step+1), train_loss, r_loss, kl_loss)
     if ((train_step+1) % 5000 == 0):
       vae.save_json("tf_vae/vae.json")
+print("Training done. Saving final model.")
 
 # finished, final model:
 vae.save_json("tf_vae/vae.json")

@@ -12,6 +12,7 @@ robo_walker
 robo_humanoid
 '''
 
+
 from mpi4py import MPI
 import numpy as np
 import json
@@ -228,6 +229,7 @@ def slave():
 
 def send_packets_to_slaves(packet_list):
   num_worker = comm.Get_size()
+  print("workers size: ", num_worker)
   assert len(packet_list) == num_worker-1
   for i in range(1, num_worker):
     packet = packet_list[i-1]
@@ -420,12 +422,14 @@ def mpi_fork(n):
       OMP_NUM_THREADS="1",
       IN_MPI="1"
     )
-    print( ["mpirun", "-np", str(n), sys.executable] + sys.argv)
-    subprocess.check_call(["mpirun", "-np", str(n), sys.executable] +['-u']+ sys.argv, env=env)
+    #KOE: mpirun-mpich seems to match my compiler. Previously was just mpirun.
+    print( ["mpirun.mpich", "-np", str(n), sys.executable] + sys.argv)
+    subprocess.check_call(["mpirun.mpich", "-np", str(n), sys.executable] +['-u']+ sys.argv, env=env)
     return "parent"
   else:
     global nworkers, rank
     nworkers = comm.Get_size()
+    print("Comm getsize: ", nworkers)
     rank = comm.Get_rank()
     print('assigning the rank and nworkers', nworkers, rank)
     return "child"

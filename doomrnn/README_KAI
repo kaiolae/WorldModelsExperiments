@@ -1,0 +1,2 @@
+Since my computer doesn't have that many cpu-nodes, I run with just 10 workers:
+python train.py --num_worker 10

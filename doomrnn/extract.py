@@ -54,6 +54,7 @@ for trial in range(MAX_TRIALS): # 200 trials per worker
       if frame % repeat == 0:
         action = np.random.rand() * 2.0 - 1.0
         repeat = np.random.randint(1, 11)
+
       recording_obs.append(pixel_obs)
       recording_action.append(action)
       obs, reward, done, info = model.env.step(action)
