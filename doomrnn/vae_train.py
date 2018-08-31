@@ -76,7 +76,7 @@ for batch_num in range(1,10):
 
   print("Loading data from ", '../../WorldModels/data_small_episodes/obs_data_doomrnn_' + str(batch_num) + '.npy')
   try:
-    new_data = np.load('./data/obs_data_doomrnn_' + str(batch_num) + '.npy')
+    new_data = np.load('../../WorldModels/data_small_episodes/obs_data_doomrnn_' + str(batch_num) + '.npy')
     print("Shape after load: ", new_data.shape)
     if first_item:
       print("Initializing data")
@@ -102,7 +102,7 @@ if first_item == False:  # i.e. data has been found for this batch number
 
   print("data shape: ", data_as_numpy.shape)
 else:
-  print('no data found for batch number {}'.format(batch_num))
+  print('no data found for any batch.')
 
 #End Kais data loading code
 
