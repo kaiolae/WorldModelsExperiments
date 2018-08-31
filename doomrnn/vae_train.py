@@ -14,7 +14,7 @@ np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
 from doomrnn import reset_graph, ConvVAE
 
 # Hyperparameters for ConvVAE
-z_size=64
+z_size=32 #KOE Testing smaller VAE.
 batch_size=100
 learning_rate=0.0001
 kl_tolerance=0.5
@@ -69,17 +69,46 @@ def create_dataset(raw_data_list):
     idx += l
   return data
 
-# load dataset from record/*. only use first 10K, sorted by filename.
-filelist = os.listdir(DATA_DIR)
-filelist.sort()
-num_files = len(filelist)
-max_file = min(num_files,10000)
-filelist = filelist[0:max_file]
-dataset = load_raw_data_list(filelist)
-dataset = create_dataset(dataset)
+#Kais data loading code ---------------------
+first_item = True
+for batch_num in range(1,10):
+  print('Building batch {}...'.format(batch_num))
+
+  print("Loading data from ", '../../WorldModels/data_small_episodes/obs_data_doomrnn_' + str(batch_num) + '.npy')
+  try:
+    new_data = np.load('./data/obs_data_doomrnn_' + str(batch_num) + '.npy')
+    print("Shape after load: ", new_data.shape)
+    if first_item:
+      print("Initializing data")
+      data = new_data
+      first_item = False
+    else:
+      print("concatenating")
+      data = np.concatenate([data, new_data])
+      print("Shape after concat: ", data.shape)
+      print('Found {}...current data size = {} episodes'.format(env_name, len(data)))
+  except:
+      pass
+
+if first_item == False:  # i.e. data has been found for this batch number
+  # Putting all images into one large 4D numpy array (img nr, width, height, color channels)
+  data_as_numpy = np.array(data[0])
+  counter = 0
+  for d in data:
+    if counter != 0:
+      data_as_numpy = np.concatenate((data_as_numpy, np.array(d)))
+    counter += 1
+  data_as_numpy = np.asarray(data_as_numpy) #Skipping div by 255 here, it happens later with this code.
+
+  print("data shape: ", data_as_numpy.shape)
+else:
+  print('no data found for batch number {}'.format(batch_num))
+
+#End Kais data loading code
+
 
 # split into batches:
-total_length = len(dataset)
+total_length = len(data_as_numpy)
 num_batches = int(np.floor(total_length/batch_size))
 print("num_batches", num_batches)
 
@@ -96,9 +125,9 @@ vae = ConvVAE(z_size=z_size,
 # train loop:
 print("train", "step", "loss", "recon_loss", "kl_loss")
 for epoch in range(NUM_EPOCH):
-  np.random.shuffle(dataset)
+  np.random.shuffle(data_as_numpy)
   for idx in range(num_batches):
-    batch = dataset[idx*batch_size:(idx+1)*batch_size]
+    batch = data_as_numpy[idx*batch_size:(idx+1)*batch_size]
 
     obs = batch.astype(np.float)/255.0
 
