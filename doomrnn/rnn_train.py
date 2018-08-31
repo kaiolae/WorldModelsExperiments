@@ -31,7 +31,7 @@ if not os.path.exists(initial_z_save_path):
 
 def default_hps():
   return HyperParams(max_seq_len=500, # train on sequences of 500 (found it worked better than 1000)
-                     seq_width=64,    # width of our data (64)
+                     seq_width=32,    # width of our data (64)
                      rnn_size=model_rnn_size,    # number of rnn cells
                      batch_size=100,   # minibatch sizes
                      grad_clip=1.0,
