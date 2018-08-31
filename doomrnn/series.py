@@ -83,24 +83,21 @@ print("action data has shape ", action_data.shape)
 
 # Need to store each ep separately. we cant predict btw episodes
 # TODO Note: There are equally many actions and observations. I guess the final action can just be discarded?
-z_sequences = []  # One for each ep
+obs_sequences = []  # One for each ep
 action_sequences = []  # One for each ep
 for episode_number in range(len(obs_data)):
-  observations = np.array(obs_data[episode_number])
-  # Generating all latent codes for this episode
-  latent_values = vae.generate_latent_variables(observations)
-  z_sequences.append(latent_values)
+  obs_sequences.append(np.array(obs_data[episode_number]))
   action_sequences.append(np.array(action_data[episode_number]))
 
-  print("Added latent sequences of length ", len(latent_values), " and action sequence of length ",
-        len(action_sequences[-1]))
-  print("Array sizes: ", len(z_sequences), ", ", len(action_sequences))
-z_sequences = np.array(z_sequences)  # Will this work? Has sub-arrays of differing lengths.
+obs_sequences = np.array(obs_sequences)
+action_sequences = np.array(action_sequences)
+print("observations shape ", obs_sequences.shape)
+print("actions shape ", action_sequences.shape)
 
 #End Kais data loading code
 
 
-dataset, action_dataset = z_sequences, action_sequences
+dataset, action_dataset = obs_sequences, action_sequences
 
 reset_graph()
 
