@@ -19,6 +19,7 @@ model_save_path = "tf_rnn"
 model_rnn_size = 512
 model_num_mixture = 5
 model_restart_factor = 10.
+Z_VECTOR_SIZE = 32 #KOEChange
 
 DATA_DIR = "series"
 
@@ -31,7 +32,7 @@ if not os.path.exists(initial_z_save_path):
 
 def default_hps():
   return HyperParams(max_seq_len=100, # KOEChange. Was 500
-                     seq_width=32,    # KOEChange. Was 32
+                     seq_width=Z_VECTOR_SIZE,    # KOEChange. Was 32
                      rnn_size=model_rnn_size,    # number of rnn cells
                      batch_size=100,   # minibatch sizes
                      grad_clip=1.0,
@@ -87,8 +88,8 @@ def create_batches(all_data, batch_size=100, seq_length=100):
   for data in all_data:
     mu, logvar, action=data
     N = len(action)
-    data_mu[idx:idx+N] = mu.reshape(N, 64)
-    data_logvar[idx:idx+N] = logvar.reshape(N, 64)
+    data_mu[idx:idx+N] = mu.reshape(N, Z_VECTOR_SIZE)
+    data_logvar[idx:idx+N] = logvar.reshape(N, Z_VECTOR_SIZE)
     data_action[idx:idx+N] = action.reshape(N)
     data_restart[idx]=1
     idx += N
@@ -98,8 +99,8 @@ def create_batches(all_data, batch_size=100, seq_length=100):
   data_action = data_action[0:num_frames_adjusted]
   data_restart = data_restart[0:num_frames_adjusted]
 
-  data_mu = np.split(data_mu.reshape(batch_size, -1, 64), num_batches, 1)
-  data_logvar = np.split(data_logvar.reshape(batch_size, -1, 64), num_batches, 1)
+  data_mu = np.split(data_mu.reshape(batch_size, -1, Z_VECTOR_SIZE), num_batches, 1)
+  data_logvar = np.split(data_logvar.reshape(batch_size, -1, Z_VECTOR_SIZE), num_batches, 1)
   data_action = np.split(data_action.reshape(batch_size, -1), num_batches, 1)
   data_restart = np.split(data_restart.reshape(batch_size, -1), num_batches, 1)
 

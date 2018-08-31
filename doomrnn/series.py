@@ -19,6 +19,8 @@ model_path_name = "tf_vae"
 
 os.environ["CUDA_VISIBLE_DEVICES"]="-1" # disable GPU
 
+Z_VECTOR_SIZE = 32 #KOEChange
+
 if not os.path.exists(SERIES_DIR):
   os.makedirs(SERIES_DIR)
 
@@ -44,14 +46,14 @@ def encode(img):
 
 def decode(z):
   # decode the latent vector
-  img = vae.decode(z.reshape(1, 64)) * 255.
+  img = vae.decode(z.reshape(1, Z_VECTOR_SIZE)) * 255.
   img = np.round(img).astype(np.uint8)
   img = img.reshape(64, 64, 3)
   return img
 
 
 # Hyperparameters for ConvVAE
-z_size=32
+z_size=Z_VECTOR_SIZE
 batch_size=1
 learning_rate=0.0001
 kl_tolerance=0.5
