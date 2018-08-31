@@ -30,8 +30,8 @@ if not os.path.exists(initial_z_save_path):
   os.makedirs(initial_z_save_path)
 
 def default_hps():
-  return HyperParams(max_seq_len=500, # train on sequences of 500 (found it worked better than 1000)
-                     seq_width=32,    # width of our data (64)
+  return HyperParams(max_seq_len=100, # KOEChange. Was 500
+                     seq_width=32,    # KOEChange. Was 32
                      rnn_size=model_rnn_size,    # number of rnn cells
                      batch_size=100,   # minibatch sizes
                      grad_clip=1.0,
@@ -73,7 +73,7 @@ def get_frame_count(all_data):
     frame_count.append(len(data[0]))
   return np.sum(frame_count)
 
-def create_batches(all_data, batch_size=100, seq_length=500):
+def create_batches(all_data, batch_size=100, seq_length=100):
   num_frames = get_frame_count(all_data)
   num_batches = int(num_frames/(batch_size*seq_length))
   num_frames_adjusted = num_batches*batch_size*seq_length
