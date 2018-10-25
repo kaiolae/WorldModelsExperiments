@@ -13,13 +13,13 @@ np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
 import random
 from doomrnn import reset_graph, ConvVAE
 
-DATA_DIR = "/home/kaiolae/code/word_models_keras_test/WorldModels/data_small_episodes"
+DATA_DIR = "record"
 SERIES_DIR = "series"
-model_path_name = "old_tf_models"
+model_path_name = "tf_vae"
 
 os.environ["CUDA_VISIBLE_DEVICES"]="-1" # disable GPU
 
-Z_VECTOR_SIZE = 64 #KOEChange
+Z_VECTOR_SIZE = 32 #KOEChange
 
 if not os.path.exists(SERIES_DIR):
   os.makedirs(SERIES_DIR)
