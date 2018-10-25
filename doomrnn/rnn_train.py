@@ -18,7 +18,7 @@ np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
 model_save_path = "tf_rnn"
 model_rnn_size = 512
 model_restart_factor = 10.
-Z_VECTOR_SIZE = 32 #KOEChange
+Z_VECTOR_SIZE = 64 #KOEChange
 DATA_DIR = "series"
 
 if not os.path.exists(model_save_path):
@@ -35,7 +35,7 @@ def main(args):
 
     def default_hps():
       return HyperParams(max_seq_len=100, # KOEChange. Was 500
-                         seq_width=Z_VECTOR_SIZE,    # KOEChange. Was 32
+                         seq_width=Z_VECTOR_SIZE,    # KOEChange. Was 64.
                          rnn_size=model_rnn_size,    # number of rnn cells
                          batch_size=100,   # minibatch sizes
                          grad_clip=1.0,
@@ -141,7 +141,7 @@ def main(args):
     hps = hps_model
     start = time.time()
 
-    for epoch in range(1, num_epochs):
+    for epoch in range(1, epochs):
       print('preparing data for epoch', epoch)
       data_mu, data_logvar, data_action, data_restart = 0, 0, 0, 0
       data_mu, data_logvar, data_action, data_restart = create_batches(all_data)
@@ -179,7 +179,7 @@ def main(args):
 #KOEChange: Added argument parsing
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description=('Train VAE'))
+    parser = argparse.ArgumentParser(description=('Train RNN'))
     parser.add_argument('--epochs', type=int, default=51, help='The number of passes through the entire data set.')
     parser.add_argument('--num_mixtures', type=int, default=5, help='The number mixtures in the MDN.')
     args = parser.parse_args()
