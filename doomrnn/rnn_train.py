@@ -13,29 +13,28 @@ import argparse
 
 from doomrnn import reset_graph, HyperParams, Model
 
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
-np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
-
-model_save_path = "tf_rnn"
-model_rnn_size = 512
-model_restart_factor = 10.
-Z_VECTOR_SIZE = 64 #KOEChange
-DATA_DIR = "series"
-
-if not os.path.exists(model_save_path):
-  os.makedirs(model_save_path)
-  
-initial_z_save_path = "tf_initial_z"
-if not os.path.exists(initial_z_save_path):
-  os.makedirs(initial_z_save_path)
-
 def main(args):
+    print("Train RNN begin")
+    os.environ["CUDA_VISIBLE_DEVICES"]="0"
+    np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
 
+    model_save_path = "tf_rnn"
+    model_rnn_size = 512
+    model_restart_factor = 10.
+    Z_VECTOR_SIZE = 64 #KOEChange
+    DATA_DIR = "series"
 
+  
+    initial_z_save_path = "tf_initial_z"
+    if not os.path.exists(initial_z_save_path):
+        os.makedirs(initial_z_save_path)
     model_num_mixture = args.num_mixtures
     epochs = args.epochs
 
-    model_save_path += "_" + model_num_mixture
+    model_save_path += "_" + str(model_num_mixture) + "mixtures"
+
+    if not os.path.exists(model_save_path):
+        os.makedirs(model_save_path)
 
     def default_hps():
       return HyperParams(max_seq_len=100, # KOEChange. Was 500
@@ -144,6 +143,7 @@ def main(args):
 
     hps = hps_model
     start = time.time()
+    print("Starting first epoch of total ", epochs)
 
     for epoch in range(1, epochs):
       print('preparing data for epoch', epoch)
