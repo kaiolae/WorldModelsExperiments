@@ -30,8 +30,11 @@ if not os.path.exists(initial_z_save_path):
 
 def main(args):
 
+
     model_num_mixture = args.num_mixtures
     epochs = args.epochs
+
+    model_save_path += "_" + model_num_mixture
 
     def default_hps():
       return HyperParams(max_seq_len=100, # KOEChange. Was 500
@@ -39,7 +42,7 @@ def main(args):
                          rnn_size=model_rnn_size,    # number of rnn cells
                          batch_size=100,   # minibatch sizes
                          grad_clip=1.0,
-                         num_mixture=model_num_mixture,   # number of mixtures in MDN
+                         num_mixture=int(model_num_mixture),   # number of mixtures in MDN
                          restart_factor=model_restart_factor, # factor of importance for restart=1 rare case for loss.
                          learning_rate=0.001,
                          decay_rate=0.99999,
