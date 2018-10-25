@@ -9,6 +9,7 @@ import json
 import tensorflow as tf
 import random
 import time
+import argparse
 
 from doomrnn import reset_graph, HyperParams, Model
 
