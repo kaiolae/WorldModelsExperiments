@@ -16,7 +16,7 @@ def count_objects(input_image, threshold, above_threshold=True):
     return object_labels.max()
 
 def count_monsters(img):
-    count_objects(img, MONSTERS_THRESHOLD, above_threshold=False)
+    return count_objects(img, MONSTERS_THRESHOLD, above_threshold=False)
 
 def count_fireballs(img):
-    count_objects(img, FIREBALL_THRESHOLD, above_threshold=True)
+    return count_objects(img, FIREBALL_THRESHOLD, above_threshold=True)
