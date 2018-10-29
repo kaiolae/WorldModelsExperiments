@@ -29,14 +29,13 @@ def count_different_events_in_images(real_images, predicted_images):
         actual_num_fireballs, img = count_fireballs(real_images[i], FIREBALL_THRESHOLD)
         predicted_num_fireballs, thresholded_image = count_fireballs(predicted_images[i],FIREBALL_THRESHOLD)
 
-        predicted_fireballs+=predicted_num_fireballs
         if actual_num_fireballs>predicted_num_fireballs:
             missing_fireballs+=actual_num_fireballs-predicted_num_fireballs
         elif predicted_num_fireballs>actual_num_fireballs:
             imagined_fireballs+=predicted_num_fireballs-actual_num_fireballs
 
         actual_num_monsters, img = count_monsters(real_images[i])
-        predicted_num_monsters,img = count_monsters(predicted_images[i])
+        predicted_num_monsters, img = count_monsters(predicted_images[i])
         if actual_num_monsters>predicted_num_monsters:
             missing_monsters+=actual_num_monsters-predicted_num_monsters
         elif predicted_num_monsters>actual_num_monsters:
@@ -61,10 +60,11 @@ def count_differences_between_reality_and_prediction(trained_vae, trained_rnn, r
     #real latent sequences: the N observations. Actions: The N-1 actions BETWEEN those observations.
     assert(len(actions)>= len(real_latent_sequence)-1)
     real_images = trained_vae.decode(real_latent_sequence)
-    dreamed_images = [] #The predictions for the NEXT image after the N-1 first observations.
+    dreamed_latents = []
     for i in range(len(real_latent_sequence)-1):
-        predicted_next_latent=trained_rnn.predict_one_step(action[i], previous_z=[real_latent_sequence[i]])
-        dreamed_images.append(trained_vae.decode(predicted_next_latent))
+        dreamed_latents.append(trained_rnn.predict_one_step(actions[i], previous_z=real_latent_sequence[i]))
+
+    dreamed_images = trained_vae.decode(dreamed_latents) #The predictions for the NEXT image after the N-1 first observations.
 
     #Lining up the predictions with the actual timestep they predict here.
     return count_different_events_in_images(real_images[1:], dreamed_images)
