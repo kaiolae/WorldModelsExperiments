@@ -56,3 +56,15 @@ def count_events_on_trained_rnn(trained_vae, trained_rnn, initial_latent_vector,
     predicted_images = trained_vae.decode(dreamed_latents)
 
     return count_events_from_images(predicted_images)
+
+def count_differences_between_reality_and_prediction(trained_vae, trained_rnn, real_latent_sequence, actions):
+    #real latent sequences: the N observations. Actions: The N-1 actions BETWEEN those observations.
+    assert(len(actions)>= len(real_latent_sequence)-1)
+    real_images = trained_vae.decode(real_latent_sequence)
+    dreamed_images = [] #The predictions for the NEXT image after the N-1 first observations.
+    for i in range(len(real_latent_sequence)-1):
+        predicted_next_latent=trained_rnn.predict_one_step(action[i], previous_z=[real_latent_sequence[i]])
+        dreamed_images.append(trained_vae.decode(predicted_next_latent))
+
+    #Lining up the predictions with the actual timestep they predict here.
+    return count_different_events_in_images(real_images[1:], dreamed_images)
