@@ -7,12 +7,12 @@ def count_events_from_images(image_sequence):
     num_monsters = 0
     thresholded_images = [] #Potentially useful for debugging
     for img in image_sequence:
-        fb, img = count_fireballs(real_images[i+1], FIREBALL_THRESHOLD)
+        fb, thresholded_image = count_fireballs(img, FIREBALL_THRESHOLD)
         thresholded_images.append(thresholded_image)
 
         num_fireballs+=fb
 
-        monsters, img = count_monsters(real_images[i+1])
+        monsters, img = count_monsters(img)
         num_monsters += monsters
 
     return {"num_fireballs":num_fireballs, "num_monsters":num_monsters}
@@ -48,10 +48,10 @@ def count_different_events_in_images(real_images, predicted_images):
 def count_events_on_trained_rnn(trained_vae, trained_rnn, initial_latent_vector, actions, num_timesteps = 100):
     assert(len(actions)>=num_timesteps)
     dreamed_latents = []
-    dreamed_latent = trained_rnn.predict_one_step(action[0], previous_z=initial_latent_vector)
+    dreamed_latent = trained_rnn.predict_one_step(actions[0], previous_z=initial_latent_vector)
     dreamed_latents.append(dreamed_latent)
     for i in range(num_timesteps-1):
-        dreamed_latents.append(trained_rnn.predict_one_step(action[i+1]))
+        dreamed_latents.append(trained_rnn.predict_one_step(actions[i+1]))
 
     predicted_images = trained_vae.decode(dreamed_latents)
 
