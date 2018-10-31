@@ -17,21 +17,21 @@ def count_events_from_images(image_sequence):
 
     return {"num_fireballs":num_fireballs, "num_monsters":num_monsters}
 
-def count_apprearances_and_disappearances_from_images(image_sequence):
+def count_appearances_and_disappearances_from_images(image_sequence):
     fireball_delta = 0
     monster_delta = 0
     thresholded_images = [] #Potentially useful for debugging
     for img_counter in range(len(image_sequence)):
         if img_counter==0:
             continue
-        fb_after, thresholded_image = count_fireballs(thresholded_images[img], FIREBALL_THRESHOLD)
-        fb_before, thresholded_image = count_fireballs(thresholded_images[img-1], FIREBALL_THRESHOLD)
+        fb_after, thresholded_image = count_fireballs(image_sequence[img_counter], FIREBALL_THRESHOLD)
+        fb_before, thresholded_image = count_fireballs(image_sequence[img_counter-1], FIREBALL_THRESHOLD)
         thresholded_images.append(thresholded_image)
 
         fireball_delta+=abs(fb_after-fb_before)
 
-        monsters_after, thresholded_image = count_monsters(thresholded_images[img], FIREBALL_THRESHOLD)
-        monsters_before, thresholded_image = count_monsters(thresholded_images[img-1], FIREBALL_THRESHOLD)
+        monsters_after, thresholded_image = count_monsters(image_sequence[img_counter])
+        monsters_before, thresholded_image = count_monsters(image_sequence[img_counter-1])
         monster_delta += abs(monsters_after-monsters_before)
 
     return {"fireball_delta":fireball_delta, "monster_delta":monster_delta}

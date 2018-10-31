@@ -1,8 +1,9 @@
 # Code that helps avoid overusing memory
 
 import tensorflow as tf
-tf_config = tf.ConfigProto()
-tf_config.gpu_options.allow_growth = True
+tf_config = tf.ConfigProto(device_count = {'GPU':0}) #To use only CPU
+#tf_config.gpu_options.allow_growth = True
+sess = tf.Session(config=tf_config)
 
 #Importing the VAE and RNN.
 import os

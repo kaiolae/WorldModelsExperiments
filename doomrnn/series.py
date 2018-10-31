@@ -17,7 +17,7 @@ DATA_DIR = "/home/kaiolae/code/word_models_keras_test/WorldModels/data_small_epi
 SERIES_DIR = "series"
 model_path_name = "old_tf_models"
 
-os.environ["CUDA_VISIBLE_DEVICES"]="-1" # disable GPU
+#os.environ["CUDA_VISIBLE_DEVICES"]="-1" # disable GPU
 
 Z_VECTOR_SIZE = 64 #KOEChange
 

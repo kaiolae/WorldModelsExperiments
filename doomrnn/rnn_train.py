@@ -18,7 +18,7 @@ def main(args):
     os.environ["CUDA_VISIBLE_DEVICES"]="0"
     np.set_printoptions(precision=4, edgeitems=6, linewidth=100, suppress=True)
 
-    model_save_path = "tf_rnn"
+    model_save_path = args.output_file_name
     model_rnn_size = 512
     model_restart_factor = 10.
     Z_VECTOR_SIZE = 64 #KOEChange
@@ -186,6 +186,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=('Train RNN'))
     parser.add_argument('--epochs', type=int, default=51, help='The number of passes through the entire data set.')
     parser.add_argument('--num_mixtures', type=int, default=5, help='The number mixtures in the MDN.')
+    parser.add_argument('--output_file_name', type=str, default="tf_rnn", help='Name of the output file.')
     args = parser.parse_args()
 
     main(args)
