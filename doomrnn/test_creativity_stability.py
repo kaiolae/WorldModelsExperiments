@@ -17,6 +17,25 @@ def count_events_from_images(image_sequence):
 
     return {"num_fireballs":num_fireballs, "num_monsters":num_monsters}
 
+def count_apprearances_and_disappearances_from_images(image_sequence):
+    fireball_delta = 0
+    monster_delta = 0
+    thresholded_images = [] #Potentially useful for debugging
+    for img_counter in range(len(image_sequence)):
+        if img_counter==0:
+            continue
+        fb_after, thresholded_image = count_fireballs(thresholded_images[img], FIREBALL_THRESHOLD)
+        fb_before, thresholded_image = count_fireballs(thresholded_images[img-1], FIREBALL_THRESHOLD)
+        thresholded_images.append(thresholded_image)
+
+        fireball_delta+=abs(fb_after-fb_before)
+
+        monsters_after, thresholded_image = count_monsters(thresholded_images[img], FIREBALL_THRESHOLD)
+        monsters_before, thresholded_image = count_monsters(thresholded_images[img-1], FIREBALL_THRESHOLD)
+        monster_delta += abs(monsters_after-monsters_before)
+
+    return {"fireball_delta":fireball_delta, "monster_delta":monster_delta}
+
 
 def count_different_events_in_images(real_images, predicted_images):
     #TODO: Note it's important the caller aligns these, so the prediction for t=0 and real event at t=0 are both at index 0 in arrays.
@@ -55,6 +74,18 @@ def count_events_on_trained_rnn(trained_vae, trained_rnn, initial_latent_vector,
     predicted_images = trained_vae.decode(dreamed_latents)
 
     return count_events_from_images(predicted_images)
+
+def count_appearances_and_disappearances(trained_vae, trained_rnn, initial_latent_vector, actions, num_timesteps = 100):
+    assert(len(actions)>=num_timesteps)
+    dreamed_latents = []
+    dreamed_latent = trained_rnn.predict_one_step(actions[0], previous_z=initial_latent_vector)
+    dreamed_latents.append(dreamed_latent)
+    for i in range(num_timesteps-1):
+        dreamed_latents.append(trained_rnn.predict_one_step(actions[i+1]))
+
+    predicted_images = trained_vae.decode(dreamed_latents)
+
+    return count_appearances_and_disappearances_from_images(predicted_images)
 
 def count_differences_between_reality_and_prediction(trained_vae, trained_rnn, real_latent_sequence, actions):
     #real latent sequences: the N observations. Actions: The N-1 actions BETWEEN those observations.
