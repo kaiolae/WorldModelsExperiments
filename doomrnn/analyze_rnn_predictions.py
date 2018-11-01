@@ -3,7 +3,6 @@
 import tensorflow as tf
 tf_config = tf.ConfigProto(device_count = {'GPU':0}) #To use only CPU
 #tf_config.gpu_options.allow_growth = True
-sess = tf.Session(config=tf_config)
 
 #Importing the VAE and RNN.
 import os
@@ -96,6 +95,7 @@ class RNNAnalyzer:
         self.vae.load_json(os.path.join(VAE_PATH, 'vae.json'))
         hps = default_prediction_hps(num_mixtures)
         self.rnn = RNN(hps, gpu_mode=False)
+
         self.rnn.load_json(os.path.join(rnn_load_path, 'rnn.json'))
         self.frame_count = 0
         self.temperature = temperature
@@ -119,6 +119,7 @@ class RNNAnalyzer:
     def predict_one_step(self, action, previous_z=[]):
         #Predicts one step ahead from the previous state.
         #If previous z is given, we predict with that as input. Otherwise, we dream from the previous output we generated.
+        print("Test")
         self.frame_count += 1
         prev_z = np.zeros((1, 1, self.outwidth))
         if len(previous_z)>0:
@@ -175,7 +176,7 @@ class RNNAnalyzer:
         self.rnn_state = next_state
 
 
-        return next_z
+        return next_z, logmix2
 
 
 
